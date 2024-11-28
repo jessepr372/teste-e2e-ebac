@@ -1,16 +1,17 @@
+// cypress/e2e/exercicio-e2e.cy.js
 describe('Teste E2E na Loja EBAC', () => {
     beforeEach(() => {
-      cy.visit('/');
+      cy.visit('/');  // Visita a página inicial antes de cada teste
     });
   
-    // adicionar produto ao carrinho
+    // Adicionar produto ao carrinho
     Cypress.Commands.add('adicionarProduto', (categoriaSelector, produtoSelector, tamanho, cor) => {
-      cy.get(categoriaSelector).click();
-      cy.get(produtoSelector).click();
-      cy.get(`.button-variable-item-${tamanho}`).click();
-      cy.get(`.button-variable-item-${cor}`).click();
-      cy.get('.single_add_to_cart_button').click();
-      cy.get('.tbay-woocommerce-breadcrumb > :nth-child(1)').click();
+      cy.get(categoriaSelector).click();  // Clica na categoria
+      cy.get(produtoSelector).click();    // Clica no produto
+      cy.get(`.button-variable-item-${tamanho}`).click();  // Seleciona o tamanho
+      cy.get(`.button-variable-item-${cor}`).click();  // Seleciona a cor
+      cy.get('.single_add_to_cart_button').click();  // Adiciona ao carrinho
+      cy.get('.tbay-woocommerce-breadcrumb > :nth-child(1)').click();  // Volta à página inicial
     });
   
     it('Deve adicionar 4 produtos ao carrinho e finalizar o pedido', () => {
@@ -30,17 +31,20 @@ describe('Teste E2E na Loja EBAC', () => {
       cy.get('.dropdown-toggle > .zmdi').click();
       cy.get('#topmenu > .menu-item-222 > a').click();
   
-      // Preencher os dados de login
-      cy.get('.showlogin').click();
-      cy.get('#username').type('aluno_ebac@teste.com');
-      cy.get('#password').type('teste@teste.com');
-      cy.get('.woocommerce-button').click();
+      // Carregar os dados de login do fixture
+      cy.fixture('login.json').then((user) => {
+        // Preencher os dados de login
+        cy.get('.showlogin').click();
+        cy.get('#username').type(user.username);
+        cy.get('#password').type(user.password);
+        cy.get('.woocommerce-button').click();
+      });
   
       // Finalizar o pedido
       cy.get('#terms').click();
       cy.get('#place_order').click();
   
-      // Verificar mensagem de sucesso (com timeout de 10 segundos)
+      // Verificar mensagem de sucesso
       cy.get('.woocommerce-notice', { timeout: 10000 }).should('contain', 'Obrigado. Seu pedido foi recebido.');
     });
   });
